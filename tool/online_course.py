@@ -8,6 +8,9 @@ selenium 库的学习和使用
 1. 安装 Python，以及装库：pip install selenium
 2. 你需要安装 Chrome 浏览器。
 3. 接着还需要下载 Chrome Driver，放到一个路径，这个路径在下面的 chrome_driver 变量设置。
+4. 修改下方的设置选项，设置好 driver 路径， chrome 数据存放路径，课程好
+
+ps. 有小伙伴反映，需要将 driver 加入 chrome 的安装目录，并且需要将 driver 放到环境变量的 Path 里面。
 
 Driver 下载地址：https://chromedriver.chromium.org/
 
