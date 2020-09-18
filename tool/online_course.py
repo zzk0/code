@@ -106,14 +106,24 @@ text_of_btn = find_element(driver, 'find_element_by_xpath', main_page_btn_text_x
 # 如果已经登录，那么那个按钮显示的内容是“学习空间”
 if text_of_btn != '学习空间':
     while True:
-        # 请求登录
-        login_btn = find_element(driver, 'find_element_by_xpath', main_page_btn_xpath)
-        login_btn.click()
+        # 检查对话框是否存在
+        login_dialog = find_element(driver, 'find_element_by_xpath',
+                                    '//*[@id="app"]/div[2]/div[2]/div[3]/div/div[4]/div/div/div[2]/div/div[1]/div[1]',
+                                    wait=False)
+        if login_dialog is None or login_dialog.location['x'] == 0:
+            # 不存在就请求登录
+            login_btn = find_element(driver, 'find_element_by_xpath', main_page_btn_xpath)
+            login_btn.click()
 
-        # 扫码登录，轮询检查头像是否存在，判断是否登录
-        img = find_element(driver, 'find_element_by_xpath', main_page_img_xpath, False)
-        if img is not None:
-            break
+        # 检查对话框是否存在
+        login_dialog = find_element(driver, 'find_element_by_xpath',
+                                    '//*[@id="app"]/div[2]/div[2]/div[3]/div/div[4]/div/div/div[2]/div/div[1]/div[1]',
+                                    wait=False)
+        if login_dialog is None or login_dialog.location['x'] == 0:
+            # 扫码登录，轮询检查头像是否存在，判断是否登录
+            img = find_element(driver, 'find_element_by_xpath', main_page_img_xpath, False)
+            if img is not None:
+                break
         time.sleep(3)
 
 # 找到学习空间并点击
