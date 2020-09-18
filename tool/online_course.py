@@ -5,20 +5,13 @@ selenium 库的学习和使用
 
 为了能够运行起来：
 
-1. 你需要安装 Chrome 浏览器。
-2. 接着还需要下载 Driver，放到一个路径，这个路径在下面的 chrome_driver 变量设置。
+1. 安装 Python，以及装库：pip install selenium
+2. 你需要安装 Chrome 浏览器。
+3. 接着还需要下载 Chrome Driver，放到一个路径，这个路径在下面的 chrome_driver 变量设置。
 
 Driver 下载地址：https://chromedriver.chromium.org/
 
 代码写的比较渣，如果运行不了，你可以尝试运行多几次。
-
-已知的几个问题：
-1. 登录之后，没有跳转
-2. 进入到课程里面，之后没反应了。
-
-遇到上面的问题，重新运行就好了。
-
-出现这几个 Bug 的主要原因是，网页需要时间加载出来。如果我在加载之前就去选择元素，那么是选择不到的。
 """
 
 from selenium import webdriver
