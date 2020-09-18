@@ -62,7 +62,7 @@ time.sleep(5)
 # 等待页面加载出来，否则会找不到元素
 while True:
     try:
-        # 选择课程，选择第二个课程，手动修改下面的数字吧。
+        # 选择课程，选择第一个课程，手动修改下面的数字吧。这个数字从 1 开始，1 对应第一门课。
         course_btn = driver.find_element_by_xpath('//*[@id="pane-student"]/div/div[1]/div/div/div/div')
         course_btn.click()
 
