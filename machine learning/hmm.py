@@ -115,8 +115,86 @@ class HMM(object):
         row_sum = row_sum.reshape([len(row_sum), 1])
         self.B = B / row_sum
 
+    def _gamma(self, seq):
+        gamma = np.zeros([len(seq), self.N])
+        alpha = self._alpha(seq)
+        beta = self._beta(seq)
+
+        for t in range(len(seq)):
+            frac = 0
+            for i in range(self.N):
+                frac += alpha[i][t] * beta[i][t]
+            for i in range(self.N):
+                gamma[t][i] = alpha[i][t] * beta[i][t] / frac
+
+        return gamma
+
+    def _epsilon(self, seq):
+        epsilon = np.zeros([len(seq), self.N, self.N])
+        alpha = self._alpha(seq)
+        beta = self._beta(seq)
+
+        for t in range(len(seq)):
+            frac = 0
+            for i in range(self.N):
+                for j in range(self.N):
+                    frac += alpha[i][t] * self.A[i][j] * self.B[j][seq[t+1]] * beta[j][t+1]
+            for i in range(self.N):
+                for j in range(self.N):
+                    epsilon[t][i][j] = alpha[i][t] * self.A[i][j] * self.B[j][seq[t+1]] * beta[j][t+1] / frac
+
+        return epsilon
+
     def _train_without_tag(self, seqs):
-        pass
+        seq = seqs[0]
+        # 猜一个初始值
+        self.Pi = np.random.normal(size=[self.N])
+        self.A = np.random.normal(size=[self.N, self.N])
+        self.B = np.random.normal(size=[self.N, self.M])
+
+        while True:
+            gamma = self._gamma(seq)
+            epsilon = self._epsilon(seq)
+
+            # 计算 Pi
+            Pi = np.zeros([self.N])
+            for i in range(self.N):
+                Pi[i] = gamma[0][i]
+
+            # 计算 A
+            A = np.zeros([self.N, self.N])
+            for i in range(self.N):
+                for j in range(self.N):
+                    a = 0
+                    b = 0
+                    for t in range(len(seq) - 1):
+                        a += epsilon[t][i][j]
+                        b += gamma[t][i]
+                    A[i][j] = a / b
+
+            # 计算 B
+            B = np.zeros([self.N, self.M])
+            for i in range(self.N):
+                for j in range(self.M):
+                    a = 0
+                    b = 0
+                    for t in range(len(seq)):
+                        # 相等的时候加；对于输入的要求是 vk = k
+                        if seq[t] == j:
+                            a += gamma[t][j]
+                        b += gamma[t][j]
+                    B[i][j] = a / b
+
+            sub_Pi = self.Pi - Pi
+            sub_A = self.A - A
+            sub_B = self.B - B
+            diff = np.sum(np.abs(sub_Pi)) + np.sum(np.abs(sub_A)) + np.sum(np.abs(sub_B))
+            if diff < 0.001:
+                break
+            else:
+                self.Pi = Pi
+                self.A = A
+                self.B = B
 
     def decode(self, seq):
         """
@@ -133,6 +211,8 @@ def main():
     hmm.set(A, B, Pi)
     prob = hmm.prob([0, 1, 0])
     print(prob)
+
+    hmm.train([[0, 1, 1, 1, 0]])
 
 
 if __name__ == '__main__':
