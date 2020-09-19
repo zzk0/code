@@ -134,7 +134,7 @@ class HMM(object):
         alpha = self._alpha(seq)
         beta = self._beta(seq)
 
-        for t in range(len(seq)):
+        for t in range(len(seq) - 1):
             frac = 0
             for i in range(self.N):
                 for j in range(self.N):
@@ -146,11 +146,24 @@ class HMM(object):
         return epsilon
 
     def _train_without_tag(self, seqs):
+        """
+        如果使用一个正态随机分布的初始值，那么每次输出的结果都不一样，并没有收敛到一个地方。
+        这是 bug 呢，还是算法本身的缺陷呢？
+        """
         seq = seqs[0]
         # 猜一个初始值
-        self.Pi = np.random.normal(size=[self.N])
-        self.A = np.random.normal(size=[self.N, self.N])
-        self.B = np.random.normal(size=[self.N, self.M])
+        # self.Pi = np.random.normal(size=[self.N])
+        # self.A = np.random.normal(size=[self.N, self.N])
+        # self.B = np.random.normal(size=[self.N, self.M])
+        self.Pi = np.ones([self.N]) / self.N
+        self.A = np.ones(([self.N, self.N])) / (self.N * self.N)
+        self.B = np.ones([self.N, self.M]) / (self.N * self.M)
+
+        print('-------------------初始状况开始--------------------')
+        print(self.Pi)
+        print(self.A)
+        print(self.B)
+        print('-------------------初始状况结束--------------------')
 
         while True:
             gamma = self._gamma(seq)
@@ -204,6 +217,7 @@ class HMM(object):
 
 
 def main():
+    # 概率计算
     A = np.array([[0.5, 0.2, 0.3], [0.3, 0.5, 0.2], [0.2, 0.3, 0.5]])
     B = np.array([[0.5, 0.5], [0.4, 0.6], [0.7, 0.3]])
     Pi = np.array([[0.2], [0.4], [0.4]])
@@ -212,7 +226,11 @@ def main():
     prob = hmm.prob([0, 1, 0])
     print(prob)
 
-    hmm.train([[0, 1, 1, 1, 0]])
+    # 学习，Baum-Welch 仅学习一个序列
+    hmm = HMM(3, 3)
+    hmm.train([[0, 1, 1, 1, 0, 1, 0, 1, 0, 2, 1, 2, 1, 2, 1]])
+    prob = hmm.prob([0, 1, 1, 1, 0])
+    print(prob)
 
 
 if __name__ == '__main__':
