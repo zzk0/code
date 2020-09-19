@@ -140,13 +140,13 @@ video_list = find_element(driver, 'find_elements_by_class_name', course_grade_vi
 # 遍历每个视频，检查是否完成，是否解锁，如果都否，那么开始学习。
 for video in video_list:
     # 检查是否已完成
-    complete = video.find_elements_by_class_name(video_list_complete_class)
-    if len(complete) != 0:
+    complete = find_element(video, 'find_element_by_class_name', video_list_complete_class, wait=False)
+    if complete is not None:
         continue
 
     # 检查是否已解锁
-    lock = video.find_elements_by_class_name(video_list_lock_class)
-    if len(lock) != 0:
+    lock = find_element(video, 'find_element_by_class_name', video_list_lock_class, wait=False)
+    if lock is not None:
         continue
 
     # 开始学习课程
